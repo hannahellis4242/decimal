@@ -315,4 +315,32 @@ mod tests {
             Ok(Integer::new_raw(Sign::Minus, &[Symbol::One]))
         );
     }
+    #[test]
+    fn test_interger_from_str_minus_10() {
+        assert_eq!(
+            Integer::from_str("-10"),
+            Ok(Integer::new_raw(Sign::Minus, &[Symbol::One,Symbol::Zero]))
+        );
+    }
+    #[test]
+    fn test_interger_from_str_plus_10() {
+        assert_eq!(
+            Integer::from_str("+10"),
+            Ok(Integer::new_raw(Sign::Plus, &[Symbol::One,Symbol::Zero]))
+        );
+    }
+    #[test]
+    fn test_interger_from_str_minus_0() {
+        assert_eq!(
+            Integer::from_str("-0"),
+            Ok(Integer::new_raw(Sign::NoSign, &[Symbol::Zero]))
+        );
+    }
+    #[test]
+    fn test_interger_from_str_plus_0() {
+        assert_eq!(
+            Integer::from_str("+0"),
+            Ok(Integer::new_raw(Sign::NoSign, &[Symbol::Zero]))
+        );
+    }
 }
