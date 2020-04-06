@@ -76,6 +76,24 @@ impl Clone for Symbol {
     }
 }
 
+use std::fmt;
+impl fmt::Display for Symbol {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Symbol::Zero => write!(f, "0"),
+            Symbol::One => write!(f, "1"),
+            Symbol::Two => write!(f, "2"),
+            Symbol::Three => write!(f, "3"),
+            Symbol::Four => write!(f, "4"),
+            Symbol::Five => write!(f, "5"),
+            Symbol::Six => write!(f, "6"),
+            Symbol::Seven => write!(f, "7"),
+            Symbol::Eight => write!(f, "8"),
+            Symbol::Nine => write!(f, "9"),
+        }
+    }
+}
+
 impl Symbol {
     fn from_char(c: &char) -> Option<Symbol> {
         match c {
@@ -186,7 +204,7 @@ impl FromStr for Integer {
                     .chars()
                     .take(1)
                     .map(|c| Sign::from_char(&c))
-                    .fold(Sign::NoSign, |acc, x| x);
+                    .fold(Sign::NoSign, |_, x| x);
                 s.chars()
                     .skip_while(|c| !c.is_digit(10))
                     .map(|c| Symbol::from_char(&c))
@@ -212,6 +230,20 @@ impl FromStr for Integer {
                 Err(ParseIntegerError::NotANumber)
             }
         }
+    }
+}
+
+impl fmt::Display for Integer {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let sign = match self.sign {
+            Sign::Minus => "-".to_string(),
+            _ => String::new(),
+        };
+        let s = self
+            .symbols
+            .iter()
+            .fold(sign, |acc, x| format!("{}{}", acc, x));
+        write!(f, "{}", s)
     }
 }
 
@@ -362,6 +394,21 @@ mod tests {
         assert_eq!(
             Integer::from_str("125+12"),
             Err(ParseIntegerError::NotANumber)
+        );
+    }
+
+    #[test]
+    fn test_display() {
+        assert_eq!(
+            format!("{}", Integer::from_str("12512").unwrap()),
+            "12512".to_string()
+        );
+    }
+    #[test]
+    fn test_display_negative() {
+        assert_eq!(
+            format!("{}", Integer::from_str("-12512").unwrap()),
+            "-12512".to_string()
         );
     }
 }
