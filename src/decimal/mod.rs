@@ -199,127 +199,127 @@ impl fmt::Display for UnsignedInteger {
 
 //fn full_add(a:&Symbol,b:&Symbol,carry_in:&Symbol)->(Symbol,Symbol)
 
-fn half_add_unit(a: &Symbol, b: &Symbol) -> Symbol {
+fn half_add_unit(a: &Symbol, b: &Symbol) -> (Symbol, Symbol) {
     match a {
         Symbol::Zero => match b {
-            Symbol::Zero => Symbol::Zero,
-            Symbol::One => Symbol::One,
-            Symbol::Two => Symbol::Two,
-            Symbol::Three => Symbol::Three,
-            Symbol::Four => Symbol::Four,
-            Symbol::Five => Symbol::Five,
-            Symbol::Six => Symbol::Six,
-            Symbol::Seven => Symbol::Seven,
-            Symbol::Eight => Symbol::Eight,
-            Symbol::Nine => Symbol::Nine,
+            Symbol::Zero => (Symbol::Zero, Symbol::Zero),
+            Symbol::One => (Symbol::One, Symbol::Zero),
+            Symbol::Two => (Symbol::Two, Symbol::Zero),
+            Symbol::Three => (Symbol::Three, Symbol::Zero),
+            Symbol::Four => (Symbol::Four, Symbol::Zero),
+            Symbol::Five => (Symbol::Five, Symbol::Zero),
+            Symbol::Six => (Symbol::Six, Symbol::Zero),
+            Symbol::Seven => (Symbol::Seven, Symbol::Zero),
+            Symbol::Eight => (Symbol::Eight, Symbol::Zero),
+            Symbol::Nine => (Symbol::Nine, Symbol::Zero),
         },
         Symbol::One => match b {
-            Symbol::Zero => Symbol::One,
-            Symbol::One => Symbol::Two,
-            Symbol::Two => Symbol::Three,
-            Symbol::Three => Symbol::Four,
-            Symbol::Four => Symbol::Five,
-            Symbol::Five => Symbol::Six,
-            Symbol::Six => Symbol::Seven,
-            Symbol::Seven => Symbol::Eight,
-            Symbol::Eight => Symbol::Nine,
-            Symbol::Nine => Symbol::Nine, //TODO
+            Symbol::Zero => (Symbol::One, Symbol::Zero),
+            Symbol::One => (Symbol::Two, Symbol::Zero),
+            Symbol::Two => (Symbol::Three, Symbol::Zero),
+            Symbol::Three => (Symbol::Four, Symbol::Zero),
+            Symbol::Four => (Symbol::Five, Symbol::Zero),
+            Symbol::Five => (Symbol::Six, Symbol::Zero),
+            Symbol::Six => (Symbol::Seven, Symbol::Zero),
+            Symbol::Seven => (Symbol::Eight, Symbol::Zero),
+            Symbol::Eight => (Symbol::Nine, Symbol::Zero),
+            Symbol::Nine => (Symbol::Zero, Symbol::One),
         },
         Symbol::Two => match b {
-            Symbol::Zero => Symbol::Two,
-            Symbol::One => Symbol::Three,
-            Symbol::Two => Symbol::Four,
-            Symbol::Three => Symbol::Five,
-            Symbol::Four => Symbol::Six,
-            Symbol::Five => Symbol::Seven,
-            Symbol::Six => Symbol::Eight,
-            Symbol::Seven => Symbol::Nine,
-            Symbol::Eight => Symbol::Nine, //TODO
-            Symbol::Nine => Symbol::Nine,  //TODO
+            Symbol::Zero => (Symbol::Two, Symbol::Zero),
+            Symbol::One => (Symbol::Three, Symbol::Zero),
+            Symbol::Two => (Symbol::Four, Symbol::Zero),
+            Symbol::Three => (Symbol::Five, Symbol::Zero),
+            Symbol::Four => (Symbol::Six, Symbol::Zero),
+            Symbol::Five => (Symbol::Seven, Symbol::Zero),
+            Symbol::Six => (Symbol::Eight, Symbol::Zero),
+            Symbol::Seven => (Symbol::Nine, Symbol::Zero),
+            Symbol::Eight => (Symbol::Zero, Symbol::One),
+            Symbol::Nine => (Symbol::One, Symbol::One),
         },
         Symbol::Three => match b {
-            Symbol::Zero => Symbol::Three,
-            Symbol::One => Symbol::Four,
-            Symbol::Two => Symbol::Five,
-            Symbol::Three => Symbol::Six,
-            Symbol::Four => Symbol::Seven,
-            Symbol::Five => Symbol::Eight,
-            Symbol::Six => Symbol::Nine,
-            Symbol::Seven => Symbol::Nine, //TODO
-            Symbol::Eight => Symbol::Nine, //TODO
-            Symbol::Nine => Symbol::Nine,  //TODO
+            Symbol::Zero => (Symbol::Three, Symbol::Zero),
+            Symbol::One => (Symbol::Four, Symbol::Zero),
+            Symbol::Two => (Symbol::Five, Symbol::Zero),
+            Symbol::Three => (Symbol::Six, Symbol::Zero),
+            Symbol::Four => (Symbol::Seven, Symbol::Zero),
+            Symbol::Five => (Symbol::Eight, Symbol::Zero),
+            Symbol::Six => (Symbol::Nine, Symbol::Zero),
+            Symbol::Seven => (Symbol::Zero, Symbol::One),
+            Symbol::Eight => (Symbol::One, Symbol::One),
+            Symbol::Nine => (Symbol::Two, Symbol::One),
         },
         Symbol::Four => match b {
-            Symbol::Zero => Symbol::Four,
-            Symbol::One => Symbol::Five,
-            Symbol::Two => Symbol::Six,
-            Symbol::Three => Symbol::Seven,
-            Symbol::Four => Symbol::Eight,
-            Symbol::Five => Symbol::Nine,
-            Symbol::Six => Symbol::Nine,   //TODO
-            Symbol::Seven => Symbol::Nine, //TODO
-            Symbol::Eight => Symbol::Nine, //TODO
-            Symbol::Nine => Symbol::Nine,  //TODO
+            Symbol::Zero => (Symbol::Four, Symbol::Zero),
+            Symbol::One => (Symbol::Five, Symbol::Zero),
+            Symbol::Two => (Symbol::Six, Symbol::Zero),
+            Symbol::Three => (Symbol::Seven, Symbol::Zero),
+            Symbol::Four => (Symbol::Eight, Symbol::Zero),
+            Symbol::Five => (Symbol::Nine, Symbol::Zero),
+            Symbol::Six => (Symbol::Zero, Symbol::One),
+            Symbol::Seven => (Symbol::One, Symbol::One),
+            Symbol::Eight => (Symbol::Two, Symbol::One),
+            Symbol::Nine => (Symbol::Three, Symbol::One),
         },
         Symbol::Five => match b {
-            Symbol::Zero => Symbol::Five,
-            Symbol::One => Symbol::Six,
-            Symbol::Two => Symbol::Seven,
-            Symbol::Three => Symbol::Eight,
-            Symbol::Four => Symbol::Nine,
-            Symbol::Five => Symbol::Nine,  //TODO
-            Symbol::Six => Symbol::Nine,   //TODO
-            Symbol::Seven => Symbol::Nine, //TODO
-            Symbol::Eight => Symbol::Nine, //TODO
-            Symbol::Nine => Symbol::Nine,  //TODO
+            Symbol::Zero => (Symbol::Five, Symbol::Zero),
+            Symbol::One => (Symbol::Six, Symbol::Zero),
+            Symbol::Two => (Symbol::Seven, Symbol::Zero),
+            Symbol::Three => (Symbol::Eight, Symbol::Zero),
+            Symbol::Four => (Symbol::Nine, Symbol::Zero),
+            Symbol::Five => (Symbol::Zero, Symbol::One),
+            Symbol::Six => (Symbol::One, Symbol::One),
+            Symbol::Seven => (Symbol::Two, Symbol::One),
+            Symbol::Eight => (Symbol::Three, Symbol::One),
+            Symbol::Nine => (Symbol::Four, Symbol::One),
         },
         Symbol::Six => match b {
-            Symbol::Zero => Symbol::Six,
-            Symbol::One => Symbol::Seven,
-            Symbol::Two => Symbol::Eight,
-            Symbol::Three => Symbol::Nine,
-            Symbol::Four => Symbol::Nine,  //TODO
-            Symbol::Five => Symbol::Nine,  //TODO
-            Symbol::Six => Symbol::Nine,   //TODO
-            Symbol::Seven => Symbol::Nine, //TODO
-            Symbol::Eight => Symbol::Nine, //TODO
-            Symbol::Nine => Symbol::Nine,  //TODO
+            Symbol::Zero => (Symbol::Six, Symbol::Zero),
+            Symbol::One => (Symbol::Seven, Symbol::Zero),
+            Symbol::Two => (Symbol::Eight, Symbol::Zero),
+            Symbol::Three => (Symbol::Nine, Symbol::Zero),
+            Symbol::Four => (Symbol::Zero, Symbol::One),
+            Symbol::Five => (Symbol::One, Symbol::One),
+            Symbol::Six => (Symbol::Two, Symbol::One),
+            Symbol::Seven => (Symbol::Three, Symbol::One),
+            Symbol::Eight => (Symbol::Four, Symbol::One),
+            Symbol::Nine => (Symbol::Five, Symbol::One),
         },
         Symbol::Seven => match b {
-            Symbol::Zero => Symbol::Seven,
-            Symbol::One => Symbol::Eight,
-            Symbol::Two => Symbol::Nine,
-            Symbol::Three => Symbol::Nine, //TODO
-            Symbol::Four => Symbol::Nine,  //TODO
-            Symbol::Five => Symbol::Nine,  //TODO
-            Symbol::Six => Symbol::Nine,   //TODO
-            Symbol::Seven => Symbol::Nine, //TODO
-            Symbol::Eight => Symbol::Nine, //TODO
-            Symbol::Nine => Symbol::Nine,  //TODO
+            Symbol::Zero => (Symbol::Seven, Symbol::Zero),
+            Symbol::One => (Symbol::Eight, Symbol::Zero),
+            Symbol::Two => (Symbol::Nine, Symbol::Zero),
+            Symbol::Three => (Symbol::Zero, Symbol::One),
+            Symbol::Four => (Symbol::One, Symbol::One),
+            Symbol::Five => (Symbol::Two, Symbol::One),
+            Symbol::Six => (Symbol::Three, Symbol::One),
+            Symbol::Seven => (Symbol::Four, Symbol::One),
+            Symbol::Eight => (Symbol::Five, Symbol::One),
+            Symbol::Nine => (Symbol::Six, Symbol::One),
         },
         Symbol::Eight => match b {
-            Symbol::Zero => Symbol::Eight,
-            Symbol::One => Symbol::Nine,
-            Symbol::Two => Symbol::Nine,   //TODO
-            Symbol::Three => Symbol::Nine, //TODO
-            Symbol::Four => Symbol::Nine,  //TODO
-            Symbol::Five => Symbol::Nine,  //TODO
-            Symbol::Six => Symbol::Nine,   //TODO
-            Symbol::Seven => Symbol::Nine, //TODO
-            Symbol::Eight => Symbol::Nine, //TODO
-            Symbol::Nine => Symbol::Nine,  //TODO
+            Symbol::Zero => (Symbol::Eight, Symbol::Zero),
+            Symbol::One => (Symbol::Nine, Symbol::Zero),
+            Symbol::Two => (Symbol::Zero, Symbol::One),
+            Symbol::Three => (Symbol::One, Symbol::One),
+            Symbol::Four => (Symbol::Two, Symbol::One),
+            Symbol::Five => (Symbol::Three, Symbol::One),
+            Symbol::Six => (Symbol::Four, Symbol::One),
+            Symbol::Seven => (Symbol::Five, Symbol::One),
+            Symbol::Eight => (Symbol::Six, Symbol::One),
+            Symbol::Nine => (Symbol::Seven, Symbol::One),
         },
         Symbol::Nine => match b {
-            Symbol::Zero => Symbol::Nine,
-            Symbol::One => Symbol::Nine,   //TODO
-            Symbol::Two => Symbol::Nine,   //TODO
-            Symbol::Three => Symbol::Nine, //TODO
-            Symbol::Four => Symbol::Nine,  //TODO
-            Symbol::Five => Symbol::Nine,  //TODO
-            Symbol::Six => Symbol::Nine,   //TODO
-            Symbol::Seven => Symbol::Nine, //TODO
-            Symbol::Eight => Symbol::Nine, //TODO
-            Symbol::Nine => Symbol::Nine,  //TODO
+            Symbol::Zero => (Symbol::Nine, Symbol::Zero),
+            Symbol::One => (Symbol::Zero, Symbol::One),
+            Symbol::Two => (Symbol::One, Symbol::One),
+            Symbol::Three => (Symbol::Two, Symbol::One),
+            Symbol::Four => (Symbol::Three, Symbol::One),
+            Symbol::Five => (Symbol::Four, Symbol::One),
+            Symbol::Six => (Symbol::Five, Symbol::One),
+            Symbol::Seven => (Symbol::Six, Symbol::One),
+            Symbol::Eight => (Symbol::Seven, Symbol::One),
+            Symbol::Nine => (Symbol::Eight, Symbol::One),
         },
     }
 }
@@ -328,13 +328,33 @@ use std::ops::Add;
 impl Add for UnsignedInteger {
     type Output = Self;
     fn add(self, other: Self) -> Self {
-        let result_symbols = self
+        let frame = self
             .symbols
             .iter()
             .zip(other.symbols.iter())
             .map(|(a, b)| half_add_unit(a, b))
             .collect::<Vec<_>>();
-        UnsignedInteger::raw(&result_symbols)
+        let units = frame.iter().cloned().map(|(u, _)| u);
+        let tens = frame.iter().cloned().map(|(_,t)| t);
+        let done = tens.clone().all(|x| x == Symbol::Zero);
+        if done {
+            UnsignedInteger::raw(units.collect::<Vec<_>>().as_slice())
+        } else {
+            //add a leading zero to units
+            let new_units = {
+                use std::iter;
+                let once = iter::once(Symbol::Zero);
+                units.chain(once).collect::<Vec<_>>()
+            };
+
+            //add a zero to the units of the tens to push it up by one
+            let new_tens = {
+                use std::iter;
+                let once = iter::once(Symbol::Zero);
+                once.chain(tens).collect::<Vec<_>>()
+            };
+            UnsignedInteger::raw(&new_units) + UnsignedInteger::raw(&new_tens)
+        }
     }
 }
 
@@ -512,7 +532,7 @@ mod tests {
             "12512".to_string()
         );
     }
-    
+
     #[test]
     fn test_add_0_0() {
         let a = UnsignedInteger::from_str("0").unwrap();
@@ -630,7 +650,7 @@ mod tests {
         let b = UnsignedInteger::from_str("8").unwrap();
         assert_eq!(a + b, UnsignedInteger::raw(&[Symbol::Nine]));
     }
-    /*#[test]
+    #[test]
     fn test_add_1_9() {
         let a = UnsignedInteger::from_str("1").unwrap();
         let b = UnsignedInteger::from_str("9").unwrap();
@@ -638,7 +658,7 @@ mod tests {
             a + b,
             UnsignedInteger::raw(&[Symbol::Zero, Symbol::One])
         );
-    }*/
+    }
 
     #[test]
     fn test_add_2_0() {
