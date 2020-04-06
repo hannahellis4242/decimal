@@ -287,6 +287,18 @@ fn half_add_unit(a: &Symbol, b: &Symbol) -> Symbol {
             Symbol::Eight => Symbol::Nine, //TODO
             Symbol::Nine => Symbol::Nine, //TODO
         },
+        Symbol::Three => match b {
+            Symbol::Zero => Symbol::Three,
+            Symbol::One => Symbol::Four,
+            Symbol::Two => Symbol::Five,
+            Symbol::Three => Symbol::Six,
+            Symbol::Four => Symbol::Seven,
+            Symbol::Five => Symbol::Eight,
+            Symbol::Six => Symbol::Nine,
+            Symbol::Seven => Symbol::Nine, //TODO
+            Symbol::Eight => Symbol::Nine, //TODO
+            Symbol::Nine => Symbol::Nine, //TODO
+        },
         _ => Symbol::Zero,
     }
 }
@@ -672,4 +684,66 @@ mod tests {
         let b = Integer::from_str("9").unwrap();
         assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Nine]));
     }*/
+    #[test]
+    fn test_add_3_0() {
+        let a = Integer::from_str("3").unwrap();
+        let b = Integer::from_str("0").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Three]));
+    }
+    #[test]
+    fn test_add_3_1() {
+        let a = Integer::from_str("3").unwrap();
+        let b = Integer::from_str("1").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Four]));
+    }
+
+    #[test]
+    fn test_add_3_2() {
+        let a = Integer::from_str("3").unwrap();
+        let b = Integer::from_str("2").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Five]));
+    }
+    #[test]
+    fn test_add_3_3() {
+        let a = Integer::from_str("3").unwrap();
+        let b = Integer::from_str("3").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Six]));
+    }
+    #[test]
+    fn test_add_3_4() {
+        let a = Integer::from_str("3").unwrap();
+        let b = Integer::from_str("4").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Seven]));
+    }
+    #[test]
+    fn test_add_3_5() {
+        let a = Integer::from_str("3").unwrap();
+        let b = Integer::from_str("5").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Eight]));
+    }
+    #[test]
+    fn test_add_3_6() {
+        let a = Integer::from_str("3").unwrap();
+        let b = Integer::from_str("6").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Nine]));
+    }
+    /*#[test]
+    fn test_add_3_7() {
+        let a = Integer::from_str("3").unwrap();
+        let b = Integer::from_str("7").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Nine]));
+    }
+    #[test]
+    fn test_add_2_8() {
+        let a = Integer::from_str("2").unwrap();
+        let b = Integer::from_str("8").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Nine]));
+    }
+    #[test]
+    fn test_add_2_9() {
+        let a = Integer::from_str("2").unwrap();
+        let b = Integer::from_str("9").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Nine]));
+    }*/
+
 }
