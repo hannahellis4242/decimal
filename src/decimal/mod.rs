@@ -101,6 +101,16 @@ enum Sign {
     NoSign,
 }
 
+impl Sign {
+    fn from_char(c: &char) -> Sign {
+        match c {
+            '+' => Sign::Plus,
+            '-' => Sign::Minus,
+            _ => Sign::NoSign,
+        }
+    }
+}
+
 impl PartialEq for Sign {
     fn eq(&self, other: &Self) -> bool {
         match self {
@@ -171,22 +181,36 @@ impl FromStr for Integer {
         if s.is_empty() {
             Err(ParseIntegerError::EmptyString)
         } else {
-            s.chars()
-                .map(|c| Symbol::from_char(&c))
-                .collect::<Option<Vec<_>>>()
-                .ok_or(ParseIntegerError::NotANumber)
-                .map(|s| {
-                    s.into_iter()
-                        .skip_while(|x| *x == Symbol::Zero)
-                        .collect::<Vec<_>>()
-                }) //remove leading zeros
-                .map(|s| {
-                    if s.is_empty() {
-                        Integer::new_raw(Sign::NoSign, &[Symbol::Zero])
-                    } else {
-                        Integer::new_raw(Sign::Plus, &s)
-                    }
-                })
+            if s.chars().all(|c| c.is_digit(10) || c == '-' || c == '+') {
+                let sign = s
+                    .chars()
+                    .take(1)
+                    .map(|c| Sign::from_char(&c))
+                    .fold(Sign::NoSign, |acc, x| x);
+                s.chars()
+                    .skip_while(|c| !c.is_digit(10))
+                    .map(|c| Symbol::from_char(&c))
+                    .collect::<Option<Vec<_>>>()
+                    .ok_or(ParseIntegerError::NotANumber)
+                    .map(|s| {
+                        s.into_iter()
+                            .skip_while(|x| *x == Symbol::Zero)
+                            .collect::<Vec<_>>()
+                    }) //remove leading zeros
+                    .and_then(|s| {
+                        if s.is_empty() {
+                            Ok(Integer::new_raw(Sign::NoSign, &[Symbol::Zero]))
+                        } else {
+                            match sign {
+                                Sign::Plus => Ok(Integer::new_raw(Sign::Plus, &s)),
+                                Sign::Minus => Ok(Integer::new_raw(Sign::Minus, &s)),
+                                Sign::NoSign => Ok(Integer::new_raw(Sign::Plus, &s)),
+                            }
+                        }
+                    })
+            } else {
+                Err(ParseIntegerError::NotANumber)
+            }
         }
     }
 }
@@ -284,11 +308,11 @@ mod tests {
             Err(ParseIntegerError::NotANumber)
         );
     }
-    /*#[test]
+    #[test]
     fn test_interger_from_str_minus_1() {
         assert_eq!(
             Integer::from_str("-1"),
             Ok(Integer::new_raw(Sign::Minus, &[Symbol::One]))
         );
-    }*/
+    }
 }
