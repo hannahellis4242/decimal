@@ -247,6 +247,52 @@ impl fmt::Display for Integer {
     }
 }
 
+//fn full_add(a:&Symbol,b:&Symbol,carry_in:&Symbol)->(Symbol,Symbol)
+
+fn half_add_unit(a: &Symbol, b: &Symbol) -> Symbol {
+    match a {
+        Symbol::Zero => match b {
+            Symbol::Zero => Symbol::Zero,
+            Symbol::One => Symbol::One,
+            Symbol::Two => Symbol::Two,
+            Symbol::Three => Symbol::Three,
+            Symbol::Four => Symbol::Four,
+            Symbol::Five => Symbol::Five,
+            Symbol::Six => Symbol::Six,
+            Symbol::Seven => Symbol::Seven,
+            Symbol::Eight => Symbol::Eight,
+            Symbol::Nine => Symbol::Nine,
+        },
+        _ => Symbol::Zero,
+    }
+}
+
+fn half_add_sign(a: &Sign, b: &Sign) -> Sign {
+    match a {
+        Sign::NoSign => match b {
+            Sign::NoSign => Sign::NoSign,
+            Sign::Plus => Sign::Plus,
+            Sign::Minus => Sign::Minus,
+        },
+        _ => Sign::NoSign,
+    }
+}
+
+use std::ops::Add;
+impl Add for Integer {
+    type Output = Self;
+    fn add(self, other: Self) -> Self {
+        let result_symbols = self
+            .symbols
+            .iter()
+            .zip(other.symbols.iter())
+            .map(|(a, b)| half_add_unit(a, b))
+            .collect::<Vec<_>>();
+        let sign = half_add_sign(&self.sign, &other.sign);
+        Integer::new_raw(sign, &result_symbols)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
@@ -410,5 +456,67 @@ mod tests {
             format!("{}", Integer::from_str("-12512").unwrap()),
             "-12512".to_string()
         );
+    }
+
+    #[test]
+    fn test_add_0_0() {
+        let a = Integer::from_str("0").unwrap();
+        let b = Integer::from_str("0").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::NoSign, &[Symbol::Zero]));
+    }
+    #[test]
+    fn test_add_0_1() {
+        let a = Integer::from_str("0").unwrap();
+        let b = Integer::from_str("1").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::One]));
+    }
+
+    #[test]
+    fn test_add_0_2() {
+        let a = Integer::from_str("0").unwrap();
+        let b = Integer::from_str("2").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Two]));
+    }
+    #[test]
+    fn test_add_0_3() {
+        let a = Integer::from_str("0").unwrap();
+        let b = Integer::from_str("3").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Three]));
+    }
+    #[test]
+    fn test_add_0_4() {
+        let a = Integer::from_str("0").unwrap();
+        let b = Integer::from_str("4").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Four]));
+    }
+    #[test]
+    fn test_add_0_5() {
+        let a = Integer::from_str("0").unwrap();
+        let b = Integer::from_str("5").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Five]));
+    }
+    #[test]
+    fn test_add_0_6() {
+        let a = Integer::from_str("0").unwrap();
+        let b = Integer::from_str("6").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Six]));
+    }
+    #[test]
+    fn test_add_0_7() {
+        let a = Integer::from_str("0").unwrap();
+        let b = Integer::from_str("7").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Seven]));
+    }
+    #[test]
+    fn test_add_0_8() {
+        let a = Integer::from_str("0").unwrap();
+        let b = Integer::from_str("8").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Eight]));
+    }
+    #[test]
+    fn test_add_0_9() {
+        let a = Integer::from_str("0").unwrap();
+        let b = Integer::from_str("9").unwrap();
+        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Nine]));
     }
 }
