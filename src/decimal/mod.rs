@@ -146,6 +146,7 @@ use std::str::FromStr;
 #[derive(Debug)]
 enum ParseIntegerError {
     EmptyString,
+    NotANumber,
 }
 
 impl PartialEq for ParseIntegerError {
@@ -153,6 +154,11 @@ impl PartialEq for ParseIntegerError {
         match self {
             ParseIntegerError::EmptyString => match other {
                 ParseIntegerError::EmptyString => true,
+                _ => false,
+            },
+            ParseIntegerError::NotANumber => match other {
+                ParseIntegerError::NotANumber => true,
+                _ => false,
             },
         }
     }
@@ -162,22 +168,26 @@ impl FromStr for Integer {
     type Err = ParseIntegerError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        s.chars()
-            .map(|c| Symbol::from_char(&c))
-            .collect::<Option<Vec<_>>>()
-            .ok_or(ParseIntegerError::EmptyString)
-            .map(|s| {
-                s.into_iter()
-                    .skip_while(|x| *x == Symbol::Zero)
-                    .collect::<Vec<_>>()
-            }) //remove leading zeros
-            .map(|s| {
-                if s.is_empty() {
-                    Integer::new_raw(Sign::NoSign, &[Symbol::Zero])
-                } else {
-                    Integer::new_raw(Sign::Plus, &s)
-                }
-            })
+        if s.is_empty() {
+            Err(ParseIntegerError::EmptyString)
+        } else {
+            s.chars()
+                .map(|c| Symbol::from_char(&c))
+                .collect::<Option<Vec<_>>>()
+                .ok_or(ParseIntegerError::NotANumber)
+                .map(|s| {
+                    s.into_iter()
+                        .skip_while(|x| *x == Symbol::Zero)
+                        .collect::<Vec<_>>()
+                }) //remove leading zeros
+                .map(|s| {
+                    if s.is_empty() {
+                        Integer::new_raw(Sign::NoSign, &[Symbol::Zero])
+                    } else {
+                        Integer::new_raw(Sign::Plus, &s)
+                    }
+                })
+        }
     }
 }
 
@@ -260,7 +270,25 @@ mod tests {
     fn test_interger_from_str_10() {
         assert_eq!(
             Integer::from_str("10"),
-            Ok(Integer::new_raw(Sign::Plus, &[Symbol::One,Symbol::Zero]))
+            Ok(Integer::new_raw(Sign::Plus, &[Symbol::One, Symbol::Zero]))
         );
     }
+    #[test]
+    fn test_interger_from_str_empty() {
+        assert_eq!(Integer::from_str(""), Err(ParseIntegerError::EmptyString));
+    }
+    #[test]
+    fn test_interger_from_str_not_a_number() {
+        assert_eq!(
+            Integer::from_str("Hello World"),
+            Err(ParseIntegerError::NotANumber)
+        );
+    }
+    /*#[test]
+    fn test_interger_from_str_minus_1() {
+        assert_eq!(
+            Integer::from_str("-1"),
+            Ok(Integer::new_raw(Sign::Minus, &[Symbol::One]))
+        );
+    }*/
 }
