@@ -151,7 +151,7 @@ impl PartialEq for Sign {
 #[derive(Debug)]
 struct Integer {
     sign: Sign,
-    symbols: Vec<Symbol>,
+    symbols: Vec<Symbol>,//stored least significant digit first, ie units,tens,hundreds etc
 }
 
 impl Integer {
@@ -205,16 +205,17 @@ impl FromStr for Integer {
                     .take(1)
                     .map(|c| Sign::from_char(&c))
                     .fold(Sign::NoSign, |_, x| x);
-                s.chars()
+                let digits = s
+                    .chars()
                     .skip_while(|c| !c.is_digit(10))
+                    .skip_while(|c| *c == '0') //remove leading zeros
+                    .collect::<Vec<_>>();
+                digits
+                    .iter()
+                    .rev()
                     .map(|c| Symbol::from_char(&c))
                     .collect::<Option<Vec<_>>>()
                     .ok_or(ParseIntegerError::NotANumber)
-                    .map(|s| {
-                        s.into_iter()
-                            .skip_while(|x| *x == Symbol::Zero)
-                            .collect::<Vec<_>>()
-                    }) //remove leading zeros
                     .and_then(|s| {
                         if s.is_empty() {
                             Ok(Integer::new_raw(Sign::NoSign, &[Symbol::Zero]))
@@ -242,6 +243,7 @@ impl fmt::Display for Integer {
         let s = self
             .symbols
             .iter()
+            .rev()
             .fold(sign, |acc, x| format!("{}{}", acc, x));
         write!(f, "{}", s)
     }
@@ -285,7 +287,7 @@ fn half_add_unit(a: &Symbol, b: &Symbol) -> Symbol {
             Symbol::Six => Symbol::Eight,
             Symbol::Seven => Symbol::Nine,
             Symbol::Eight => Symbol::Nine, //TODO
-            Symbol::Nine => Symbol::Nine, //TODO
+            Symbol::Nine => Symbol::Nine,  //TODO
         },
         Symbol::Three => match b {
             Symbol::Zero => Symbol::Three,
@@ -297,7 +299,7 @@ fn half_add_unit(a: &Symbol, b: &Symbol) -> Symbol {
             Symbol::Six => Symbol::Nine,
             Symbol::Seven => Symbol::Nine, //TODO
             Symbol::Eight => Symbol::Nine, //TODO
-            Symbol::Nine => Symbol::Nine, //TODO
+            Symbol::Nine => Symbol::Nine,  //TODO
         },
         Symbol::Four => match b {
             Symbol::Zero => Symbol::Four,
@@ -306,10 +308,10 @@ fn half_add_unit(a: &Symbol, b: &Symbol) -> Symbol {
             Symbol::Three => Symbol::Seven,
             Symbol::Four => Symbol::Eight,
             Symbol::Five => Symbol::Nine,
-            Symbol::Six => Symbol::Nine, //TODO
+            Symbol::Six => Symbol::Nine,   //TODO
             Symbol::Seven => Symbol::Nine, //TODO
             Symbol::Eight => Symbol::Nine, //TODO
-            Symbol::Nine => Symbol::Nine, //TODO
+            Symbol::Nine => Symbol::Nine,  //TODO
         },
         Symbol::Five => match b {
             Symbol::Zero => Symbol::Five,
@@ -317,59 +319,59 @@ fn half_add_unit(a: &Symbol, b: &Symbol) -> Symbol {
             Symbol::Two => Symbol::Seven,
             Symbol::Three => Symbol::Eight,
             Symbol::Four => Symbol::Nine,
-            Symbol::Five => Symbol::Nine, //TODO
-            Symbol::Six => Symbol::Nine, //TODO
+            Symbol::Five => Symbol::Nine,  //TODO
+            Symbol::Six => Symbol::Nine,   //TODO
             Symbol::Seven => Symbol::Nine, //TODO
             Symbol::Eight => Symbol::Nine, //TODO
-            Symbol::Nine => Symbol::Nine, //TODO
+            Symbol::Nine => Symbol::Nine,  //TODO
         },
         Symbol::Six => match b {
             Symbol::Zero => Symbol::Six,
             Symbol::One => Symbol::Seven,
             Symbol::Two => Symbol::Eight,
             Symbol::Three => Symbol::Nine,
-            Symbol::Four => Symbol::Nine,//TODO
-            Symbol::Five => Symbol::Nine, //TODO
-            Symbol::Six => Symbol::Nine, //TODO
+            Symbol::Four => Symbol::Nine,  //TODO
+            Symbol::Five => Symbol::Nine,  //TODO
+            Symbol::Six => Symbol::Nine,   //TODO
             Symbol::Seven => Symbol::Nine, //TODO
             Symbol::Eight => Symbol::Nine, //TODO
-            Symbol::Nine => Symbol::Nine, //TODO
+            Symbol::Nine => Symbol::Nine,  //TODO
         },
         Symbol::Seven => match b {
             Symbol::Zero => Symbol::Seven,
             Symbol::One => Symbol::Eight,
             Symbol::Two => Symbol::Nine,
-            Symbol::Three => Symbol::Nine,//TODO
-            Symbol::Four => Symbol::Nine,//TODO
-            Symbol::Five => Symbol::Nine, //TODO
-            Symbol::Six => Symbol::Nine, //TODO
+            Symbol::Three => Symbol::Nine, //TODO
+            Symbol::Four => Symbol::Nine,  //TODO
+            Symbol::Five => Symbol::Nine,  //TODO
+            Symbol::Six => Symbol::Nine,   //TODO
             Symbol::Seven => Symbol::Nine, //TODO
             Symbol::Eight => Symbol::Nine, //TODO
-            Symbol::Nine => Symbol::Nine, //TODO
+            Symbol::Nine => Symbol::Nine,  //TODO
         },
         Symbol::Eight => match b {
             Symbol::Zero => Symbol::Eight,
             Symbol::One => Symbol::Nine,
-            Symbol::Two => Symbol::Nine,//TODO
-            Symbol::Three => Symbol::Nine,//TODO
-            Symbol::Four => Symbol::Nine,//TODO
-            Symbol::Five => Symbol::Nine, //TODO
-            Symbol::Six => Symbol::Nine, //TODO
+            Symbol::Two => Symbol::Nine,   //TODO
+            Symbol::Three => Symbol::Nine, //TODO
+            Symbol::Four => Symbol::Nine,  //TODO
+            Symbol::Five => Symbol::Nine,  //TODO
+            Symbol::Six => Symbol::Nine,   //TODO
             Symbol::Seven => Symbol::Nine, //TODO
             Symbol::Eight => Symbol::Nine, //TODO
-            Symbol::Nine => Symbol::Nine, //TODO
+            Symbol::Nine => Symbol::Nine,  //TODO
         },
         Symbol::Nine => match b {
             Symbol::Zero => Symbol::Nine,
-            Symbol::One => Symbol::Nine,//TODO
-            Symbol::Two => Symbol::Nine,//TODO
-            Symbol::Three => Symbol::Nine,//TODO
-            Symbol::Four => Symbol::Nine,//TODO
-            Symbol::Five => Symbol::Nine, //TODO
-            Symbol::Six => Symbol::Nine, //TODO
+            Symbol::One => Symbol::Nine,   //TODO
+            Symbol::Two => Symbol::Nine,   //TODO
+            Symbol::Three => Symbol::Nine, //TODO
+            Symbol::Four => Symbol::Nine,  //TODO
+            Symbol::Five => Symbol::Nine,  //TODO
+            Symbol::Six => Symbol::Nine,   //TODO
             Symbol::Seven => Symbol::Nine, //TODO
             Symbol::Eight => Symbol::Nine, //TODO
-            Symbol::Nine => Symbol::Nine, //TODO
+            Symbol::Nine => Symbol::Nine,  //TODO
         },
     }
 }
@@ -484,7 +486,7 @@ mod tests {
     fn test_interger_from_str_10() {
         assert_eq!(
             Integer::from_str("10"),
-            Ok(Integer::new_raw(Sign::Plus, &[Symbol::One, Symbol::Zero]))
+            Ok(Integer::new_raw(Sign::Plus, &[Symbol::Zero, Symbol::One]))
         );
     }
     #[test]
@@ -509,14 +511,28 @@ mod tests {
     fn test_interger_from_str_minus_10() {
         assert_eq!(
             Integer::from_str("-10"),
-            Ok(Integer::new_raw(Sign::Minus, &[Symbol::One, Symbol::Zero]))
+            Ok(Integer::new_raw(Sign::Minus, &[Symbol::Zero, Symbol::One]))
         );
     }
     #[test]
     fn test_interger_from_str_plus_10() {
         assert_eq!(
             Integer::from_str("+10"),
-            Ok(Integer::new_raw(Sign::Plus, &[Symbol::One, Symbol::Zero]))
+            Ok(Integer::new_raw(Sign::Plus, &[Symbol::Zero, Symbol::One]))
+        );
+    }
+    #[test]
+    fn test_interger_from_str_minus_000010() {
+        assert_eq!(
+            Integer::from_str("-000010"),
+            Ok(Integer::new_raw(Sign::Minus, &[Symbol::Zero, Symbol::One]))
+        );
+    }
+    #[test]
+    fn test_interger_from_str_plus_000010() {
+        assert_eq!(
+            Integer::from_str("+000010"),
+            Ok(Integer::new_raw(Sign::Plus, &[Symbol::Zero, Symbol::One]))
         );
     }
     #[test]
@@ -691,7 +707,10 @@ mod tests {
     fn test_add_1_9() {
         let a = Integer::from_str("1").unwrap();
         let b = Integer::from_str("9").unwrap();
-        assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Nine]));
+        assert_eq!(
+            a + b,
+            Integer::new_raw(Sign::Plus, &[Symbol::Zero, Symbol::One])
+        );
     }*/
 
     #[test]
@@ -1182,5 +1201,4 @@ mod tests {
         let b = Integer::from_str("9").unwrap();
         assert_eq!(a + b, Integer::new_raw(Sign::Plus, &[Symbol::Nine]));
     }*/
-
 }
