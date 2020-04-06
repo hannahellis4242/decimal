@@ -319,14 +319,14 @@ mod tests {
     fn test_interger_from_str_minus_10() {
         assert_eq!(
             Integer::from_str("-10"),
-            Ok(Integer::new_raw(Sign::Minus, &[Symbol::One,Symbol::Zero]))
+            Ok(Integer::new_raw(Sign::Minus, &[Symbol::One, Symbol::Zero]))
         );
     }
     #[test]
     fn test_interger_from_str_plus_10() {
         assert_eq!(
             Integer::from_str("+10"),
-            Ok(Integer::new_raw(Sign::Plus, &[Symbol::One,Symbol::Zero]))
+            Ok(Integer::new_raw(Sign::Plus, &[Symbol::One, Symbol::Zero]))
         );
     }
     #[test]
@@ -341,6 +341,27 @@ mod tests {
         assert_eq!(
             Integer::from_str("+0"),
             Ok(Integer::new_raw(Sign::NoSign, &[Symbol::Zero]))
+        );
+    }
+    #[test]
+    fn test_interger_from_str_plus_00000() {
+        assert_eq!(
+            Integer::from_str("+00000"),
+            Ok(Integer::new_raw(Sign::NoSign, &[Symbol::Zero]))
+        );
+    }
+    #[test]
+    fn test_interger_from_str_dashes_centre() {
+        assert_eq!(
+            Integer::from_str("125-12"),
+            Err(ParseIntegerError::NotANumber)
+        );
+    }
+    #[test]
+    fn test_interger_from_str_pluses_centre() {
+        assert_eq!(
+            Integer::from_str("125+12"),
+            Err(ParseIntegerError::NotANumber)
         );
     }
 }
