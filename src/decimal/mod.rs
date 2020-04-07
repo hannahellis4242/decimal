@@ -113,7 +113,7 @@ impl Symbol {
 }
 
 #[derive(Debug)]
-struct UnsignedInteger {
+pub struct UnsignedInteger {
     symbols: Vec<Symbol>, //stored least significant digit first, ie units,tens,hundreds etc
 }
 
@@ -134,7 +134,7 @@ impl PartialEq for UnsignedInteger {
 use std::str::FromStr;
 
 #[derive(Debug)]
-enum ParseUnsignedIntegerError {
+pub enum ParseUnsignedIntegerError {
     EmptyString,
     NotANumber,
 }
