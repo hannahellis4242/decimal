@@ -123,6 +123,44 @@ impl UnsignedInteger {
             symbols: ss.to_vec(),
         }
     }
+    fn digits(&self) -> usize {
+        self.symbols.len()
+    }
+
+    fn pad_with_leading_zeros(&self, n: usize) -> UnsignedInteger {
+        let new_symbols = {
+            use std::iter;
+            let zeros = iter::repeat(Symbol::Zero).take(n).collect::<Vec<_>>();
+            self.symbols
+                .iter()
+                .chain(zeros.iter())
+                .cloned()
+                .collect::<Vec<_>>()
+        };
+        UnsignedInteger {
+            symbols: new_symbols,
+        }
+    }
+
+    fn strip_leading_zeros(&self) -> UnsignedInteger {
+        let new_symbols = {
+            let reversed = self.symbols.iter().rev().collect::<Vec<_>>();
+            reversed
+                .into_iter()
+                .skip_while(|&x| *x == Symbol::Zero)
+                .cloned()
+                .collect::<Vec<_>>()
+        };
+        if new_symbols.is_empty() {
+            UnsignedInteger {
+                symbols: [Symbol::Zero].to_vec(),
+            }
+        } else {
+            UnsignedInteger {
+                symbols: new_symbols,
+            }
+        }
+    }
 }
 
 impl PartialEq for UnsignedInteger {
@@ -340,32 +378,40 @@ use std::ops::Add;
 impl Add for UnsignedInteger {
     type Output = Self;
     fn add(self, other: Self) -> Self {
-        let frame = self
-            .symbols
-            .iter()
-            .zip(other.symbols.iter())
-            .map(|(a, b)| half_add_unit(a, b))
-            .collect::<Vec<_>>();
-        let units = frame.iter().cloned().map(|(u, _)| u);
-        let tens = frame.iter().cloned().map(|(_, t)| t);
-        let done = tens.clone().all(|x| x == Symbol::Zero);
-        if done {
-            UnsignedInteger::raw(units.collect::<Vec<_>>().as_slice())
+        if self.digits() != other.digits() {
+            if self.digits() < other.digits() {
+                self.pad_with_leading_zeros(other.digits() - self.digits()) + other
+            } else {
+                self.clone() + other.pad_with_leading_zeros(self.digits() - other.digits())
+            }
         } else {
-            //add a leading zero to units
-            let new_units = {
-                use std::iter;
-                let once = iter::once(Symbol::Zero);
-                units.chain(once).collect::<Vec<_>>()
-            };
+            let frame = self
+                .symbols
+                .iter()
+                .zip(other.symbols.iter())
+                .map(|(a, b)| half_add_unit(a, b))
+                .collect::<Vec<_>>();
+            let units = frame.iter().cloned().map(|(u, _)| u);
+            let tens = frame.iter().cloned().map(|(_, t)| t);
+            let done = tens.clone().all(|x| x == Symbol::Zero);
+            if done {
+                UnsignedInteger::raw(units.collect::<Vec<_>>().as_slice())
+            } else {
+                //add a leading zero to units
+                let new_units = {
+                    use std::iter;
+                    let once = iter::once(Symbol::Zero);
+                    units.chain(once).collect::<Vec<_>>()
+                };
 
-            //add a zero to the units of the tens to push it up by one
-            let new_tens = {
-                use std::iter;
-                let once = iter::once(Symbol::Zero);
-                once.chain(tens).collect::<Vec<_>>()
-            };
-            UnsignedInteger::raw(&new_units) + UnsignedInteger::raw(&new_tens)
+                //add a zero to the units of the tens to push it up by one
+                let new_tens = {
+                    use std::iter;
+                    let once = iter::once(Symbol::Zero);
+                    once.chain(tens).collect::<Vec<_>>()
+                };
+                UnsignedInteger::raw(&new_units) + UnsignedInteger::raw(&new_tens)
+            }
         }
     }
 }
@@ -563,24 +609,31 @@ mod tests {
             .map(|(big, little)| (format!("{}", big), format!("{}", little)))
             .for_each(|(result, expected)| assert_eq!(result, expected));
     }
-
+    #[test]
     fn test_add() {
-        let cases = [
-            "0", "12", "15", "50", "75", "128", "613", "1024", "4221", "7555",
-        ]
-        .iter()
-        .map(|x| {
-            (
-                UnsignedInteger::from_str(x).unwrap(),
-                u32::from_str(x).unwrap(),
-            )
-        });
-        use itertools::Itertools;
-        cases
-            .clone()
-            .cartesian_product(cases)
-            .map(|((big_x, x), (big_y, y))| (big_x + big_y, x + y))
-            .map(|(big, little)| (format!("{}", big), format!("{}", little)))
-            .for_each(|(result, expected)| assert_eq!(result, expected));
+        {
+            let cases = [
+                "0", "6", "12", "15", "50", "75", "128", "613", "1024", "4221", "7555",
+            ]
+            .iter()
+            .map(|x| {
+                (
+                    UnsignedInteger::from_str(x).unwrap(),
+                    u32::from_str(x).unwrap(),
+                )
+            });
+            use itertools::Itertools;
+            cases
+                .clone()
+                .cartesian_product(cases)
+                .map(|((big_x, x), (big_y, y))| (big_x + big_y, x + y))
+                .map(|(big, little)| (format!("{}", big), format!("{}", little)))
+                .for_each(|(result, expected)| assert_eq!(result, expected));
+        }
+        {
+            let x = UnsignedInteger::from_str("6").unwrap();
+            let y = UnsignedInteger::from_str("1551324303876771241884343113259599609378653143111280111834187291909203932606583041853156452338126705").unwrap();
+            assert_eq!(format!("{}",x+y),"1551324303876771241884343113259599609378653143111280111834187291909203932606583041853156452338126711".to_string());
+        }
     }
 }
