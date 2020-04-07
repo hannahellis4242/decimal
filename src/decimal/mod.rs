@@ -188,12 +188,18 @@ impl FromStr for UnsignedInteger {
 
 impl fmt::Display for UnsignedInteger {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let s = self
-            .symbols
+        let x = self.symbols.iter().rev().cloned().collect::<Vec<_>>();
+
+        let y = x
             .iter()
-            .rev()
+            .cloned()
+            .skip_while(|x| *x == Symbol::Zero) //strip leading zeros
             .fold(String::new(), |acc, x| format!("{}{}", acc, x));
-        write!(f, "{}", s)
+        if y.is_empty() {
+            write!(f, "0") //we've stripped all the zeros, so it must have been zero
+        } else {
+            write!(f, "{}", y)
+        }
     }
 }
 
@@ -559,14 +565,16 @@ mod tests {
     }
 
     fn test_add() {
-        let cases = ["0", "12", "15", "50", "75", "128", "613", "1024", "4221", "7555"]
-            .iter()
-            .map(|x| {
-                (
-                    UnsignedInteger::from_str(x).unwrap(),
-                    u32::from_str(x).unwrap(),
-                )
-            });
+        let cases = [
+            "0", "12", "15", "50", "75", "128", "613", "1024", "4221", "7555",
+        ]
+        .iter()
+        .map(|x| {
+            (
+                UnsignedInteger::from_str(x).unwrap(),
+                u32::from_str(x).unwrap(),
+            )
+        });
         use itertools::Itertools;
         cases
             .clone()
